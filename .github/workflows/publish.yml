@@ -32,11 +32,11 @@ jobs:
             *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
           esac
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
@@ -61,7 +61,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: softprops/action-gh-release@v3
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
