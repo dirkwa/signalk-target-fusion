@@ -46,11 +46,12 @@ export class Fusion {
       const wanted = group === context ? null : group
       if (wanted !== current) {
         changes.set(context, wanted)
+        if (wanted !== null) {
+          this.linked.add(context)
+        }
       }
       if (wanted === null) {
         this.linked.delete(context)
-      } else {
-        this.linked.add(context)
       }
     }
     return changes

@@ -94,4 +94,10 @@ describe('Fusion', () => {
     update(fusion, { 'radar:r0-1': node(2050) })
     expect([...fusion.stop()]).toEqual([['targets.radar:r0-1', null]])
   })
+
+  it('leaves a link it did not publish in place when stopped', () => {
+    const fusion = new Fusion(DEFAULTS.gateDistance)
+    update(fusion, { 'radar:r0-1': node(2050, { sameAs: `vessels.${VESSEL}` }) })
+    expect(fusion.stop().size).toBe(0)
+  })
 })
