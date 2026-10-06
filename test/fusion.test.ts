@@ -77,6 +77,16 @@ describe('Fusion', () => {
     expect(changes.size).toBe(0)
   })
 
+  it('withdraws the link of a target whose track was lost', () => {
+    const fusion = new Fusion(DEFAULTS.gateDistance)
+    const lost: ContextNode = {
+      sameAs: { value: `vessels.${VESSEL}` },
+      navigation: { position: { value: null, timestamp: new Date(NOW).toISOString() } }
+    }
+    expect([...update(fusion, { 'radar:r0-1': lost })]).toEqual([['targets.radar:r0-1', null]])
+    expect(update(fusion, { 'radar:r0-1': { ...lost, sameAs: { value: null } } }).size).toBe(0)
+  })
+
   it('links one target per sensor to a vessel', () => {
     const changes = update(new Fusion(DEFAULTS.gateDistance), {
       'radar:r0-1': node(2020),

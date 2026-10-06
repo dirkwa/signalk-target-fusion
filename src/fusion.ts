@@ -1,5 +1,12 @@
 import { associate } from './association.js'
-import { aisVessels, currentLinks, positionOf, sensorTargets, type Contexts } from './model.js'
+import {
+  aisVessels,
+  currentLinks,
+  isLost,
+  positionOf,
+  sensorTargets,
+  type Contexts
+} from './model.js'
 
 export interface FusionInput {
   vessels: Contexts
@@ -39,11 +46,12 @@ export class Fusion {
     for (const [context, current] of currentLinks(targets)) {
       const group = groups.get(context)
       // A target without a fresh position keeps its link: consumers already
-      // ignore it, and the link is right again if the track resumes.
-      if (group === undefined) {
+      // ignore it, and the link is right again if the track resumes. A lost
+      // track does not resume, so its link goes.
+      if (group === undefined && !isLost(targets[context.slice('targets.'.length)])) {
         continue
       }
-      const wanted = group === context ? null : group
+      const wanted = group === undefined || group === context ? null : group
       if (wanted !== current) {
         changes.set(context, wanted)
         if (wanted !== null) {
