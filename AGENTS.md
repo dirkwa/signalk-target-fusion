@@ -24,7 +24,8 @@ plotters) treat each context without `sameAs` as one object.
   or `null`. Links never chain. Changing this is a breaking change for every
   consumer.
 - **Withdraw what you link.** `stop()` publishes `null` for every link this
-  plugin made, or consumers keep hiding targets behind a vessel.
+  plugin made that still holds the value it published, or consumers keep
+  hiding targets behind a vessel. A link another writer set is left alone.
 
 ## Gotchas
 

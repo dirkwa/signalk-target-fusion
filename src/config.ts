@@ -1,5 +1,8 @@
 import { Type, type Static } from 'typebox'
 
+/** Linking faster than this would load the server for no gain. */
+export const MIN_INTERVAL_S = 1
+
 export const ConfigSchema = Type.Object({
   gateDistance: Type.Number({
     title: 'Match targets within (m)',
@@ -8,7 +11,7 @@ export const ConfigSchema = Type.Object({
     minimum: 10,
     default: 200
   }),
-  interval: Type.Number({ title: 'Link targets every (s)', minimum: 1, default: 2 })
+  interval: Type.Number({ title: 'Link targets every (s)', minimum: MIN_INTERVAL_S, default: 2 })
 })
 
 export type Config = Static<typeof ConfigSchema>

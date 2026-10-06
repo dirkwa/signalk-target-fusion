@@ -92,12 +92,21 @@ describe('Fusion', () => {
   it('withdraws its links when stopped', () => {
     const fusion = new Fusion(DEFAULTS.gateDistance)
     update(fusion, { 'radar:r0-1': node(2050) })
-    expect([...fusion.stop()]).toEqual([['targets.radar:r0-1', null]])
+    const linked = { 'radar:r0-1': node(2050, { sameAs: `vessels.${VESSEL}` }) }
+    expect([...fusion.stop(linked)]).toEqual([['targets.radar:r0-1', null]])
   })
 
   it('leaves a link it did not publish in place when stopped', () => {
     const fusion = new Fusion(DEFAULTS.gateDistance)
-    update(fusion, { 'radar:r0-1': node(2050, { sameAs: `vessels.${VESSEL}` }) })
-    expect(fusion.stop().size).toBe(0)
+    const targets = { 'radar:r0-1': node(2050, { sameAs: `vessels.${VESSEL}` }) }
+    update(fusion, targets)
+    expect(fusion.stop(targets).size).toBe(0)
+  })
+
+  it('leaves a link another writer replaced in place when stopped', () => {
+    const fusion = new Fusion(DEFAULTS.gateDistance)
+    update(fusion, { 'radar:r0-1': node(2050) })
+    const replaced = { 'radar:r0-1': node(2050, { sameAs: 'targets.camera:7' }) }
+    expect(fusion.stop(replaced).size).toBe(0)
   })
 })

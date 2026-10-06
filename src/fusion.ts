@@ -18,8 +18,8 @@ export type LinkChanges = Map<string, string | null>
 export class Fusion {
   /** The context each target belonged to last time, for link hysteresis. */
   private previous = new Map<string, string>()
-  /** Targets this plugin linked, so stop() can withdraw exactly those. */
-  private readonly linked = new Set<string>()
+  /** The link this plugin published per target, so stop() withdraws only those. */
+  private readonly linked = new Map<string, string>()
 
   /** @param minGateM gate radius near own ship (m) */
   constructor(private readonly minGateM: number) {}
@@ -47,7 +47,7 @@ export class Fusion {
       if (wanted !== current) {
         changes.set(context, wanted)
         if (wanted !== null) {
-          this.linked.add(context)
+          this.linked.set(context, wanted)
         }
       }
       if (wanted === null) {
@@ -57,9 +57,15 @@ export class Fusion {
     return changes
   }
 
-  /** Withdraws every link this plugin made. */
-  stop(): LinkChanges {
-    const changes: LinkChanges = new Map([...this.linked].map((context) => [context, null]))
+  /** Withdraws the links this plugin made that nobody has replaced since. */
+  stop(targets: Contexts): LinkChanges {
+    const current = currentLinks(targets)
+    const changes: LinkChanges = new Map()
+    for (const [context, published] of this.linked) {
+      if (current.get(context) === published) {
+        changes.set(context, null)
+      }
+    }
     this.linked.clear()
     this.previous = new Map()
     return changes
