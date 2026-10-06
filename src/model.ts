@@ -84,6 +84,14 @@ export function currentLinks(targets: Contexts): Map<string, string | null> {
   return links
 }
 
+/**
+ * Whether the target's sensor reported its track lost, with a null position.
+ * Such a track never resumes, so its id may later name a different object.
+ */
+export function isLost(node: ContextNode | undefined): boolean {
+  return node?.navigation?.position?.value === null
+}
+
 export function positionOf(node: ContextNode | undefined): Position | undefined {
   const value = node?.navigation?.position?.value
   return isPosition(value) ? value : undefined
