@@ -1,6 +1,6 @@
 {
   "name": "signalk-target-fusion",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Links radar and camera targets to the AIS vessels they see, so Signal K clients show and alarm each boat once",
   "main": "plugin/index.js",
   "type": "module",
