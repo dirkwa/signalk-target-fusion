@@ -42,9 +42,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-          TITLE: ${{ github.event.pull_request.title }}
-          BODY: ${{ github.event.pull_request.body }}
         run: |
+          # Read the pull request as it is now rather than from the event: runs
+          # for two quick edits can start out of order, and the later one must
+          # not label from the earlier title.
+          pr=$(gh pr view "$NUMBER" --repo "$REPO" --json title,body,labels)
+          TITLE=$(jq -r '.title' <<< "$pr")
+          BODY=$(jq -r '.body' <<< "$pr")
+          labels=$(jq -r '.labels[].name' <<< "$pr")
           # The labels this workflow owns, one of them at a time, so a title
           # edited from feat to fix swaps the label rather than adding one.
           # `dependencies` is dependabot's; it is added for a runtime bump
@@ -69,15 +74,14 @@ jobs:
           if [ -n "$bang" ] || grep -qE '^BREAKING[ -]CHANGE: ' <<< "$BODY"; then
             wanted=breaking-change
           fi
-          current=$(gh pr view "$NUMBER" --repo "$REPO" --json labels --jq '[.labels[].name] | join(" ")')
           args=()
           for label in $managed; do
-            case " $current " in *" $label "*) has=1 ;; *) has=0 ;; esac
+            if grep -qxF "$label" <<< "$labels"; then has=1; else has=0; fi
             if [ "$label" = "$wanted" ] && [ "$has" = 0 ]; then args+=(--add-label "$label"); fi
             if [ "$label" != "$wanted" ] && [ "$has" = 1 ]; then args+=(--remove-label "$label"); fi
           done
           if [ "$type" = build ] && [ "$scope" = deps ]; then
-            case " $current " in *" dependencies "*) ;; *) args+=(--add-label dependencies) ;; esac
+            grep -qxF dependencies <<< "$labels" || args+=(--add-label dependencies)
           fi
           if [ "${#args[@]}" = 0 ]; then
             echo "#$NUMBER '$TITLE': nothing to change (${wanted:-no managed label})"
