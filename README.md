@@ -24,7 +24,7 @@ targets.radar:nav1034A-17  sameAs  "vessels.urn:mrn:imo:mmsi:244060000"
 A target is linked to an AIS vessel when:
 
 - the sensor identified the vessel by its MMSI, or
-- the AIS position, moved forward to the time of the radar or camera observation, is within 200 m of the target (configurable; beyond 4 km from own ship the distance is 5% of the range instead, because radar bearings are less precise there), and the two agree on course (within 45°, compared once both make 1 m/s) and speed (within half the faster of the two, and never tighter than 1.5 m/s).
+- the AIS position, moved forward to the time of the radar or camera observation, is within 200 m of the target or 5% of its range from own ship, whichever is larger (200 m is configurable; radar bearings are less precise far out), and the two agree on course (within 45°, compared once both make 1 m/s) and speed (within half the faster of the two, and never tighter than 1.5 m/s).
 
 Targets without AIS are linked to each other the same way, so a radar track and a camera detection of one boat without AIS are one object. One sensor never contributes two targets to one boat. A link, once made, holds a little beyond the distance it took to make it, so a boat near the limit doesn't flicker between one symbol and two. A target keeps its AIS vessel while radar still tracks it after the vessel's AIS falls silent.
 
