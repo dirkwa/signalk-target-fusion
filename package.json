@@ -2,6 +2,7 @@
   "name": "signalk-target-fusion",
   "version": "0.1.0",
   "description": "Links radar and camera targets to the AIS vessels they see, so Signal K clients show and alarm each boat once",
+  "author": "Dirk Wahrheit",
   "main": "plugin/index.js",
   "type": "module",
   "scripts": {
@@ -22,10 +23,16 @@
     "sensor-fusion"
   ],
   "signalk": {
-    "displayName": "Target Fusion"
+    "displayName": "Target Fusion",
+    "appIcon": "./assets/icon.svg",
+    "screenshots": [
+      "./docs/screenshots/fused-target.png"
+    ]
   },
   "files": [
-    "plugin/**/*"
+    "plugin/**/*",
+    "assets/icon.svg",
+    "docs/screenshots/*.png"
   ],
   "engines": {
     "node": ">=22.15.0",
