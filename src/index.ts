@@ -27,7 +27,7 @@ export default function (app: ServerAPI): Plugin {
     start(partial: object) {
       // The server does not apply schema defaults at runtime.
       const config: Config = { ...DEFAULTS, ...(partial as Partial<Config>) }
-      const active = new Fusion(config.gateDistance)
+      const active = new Fusion()
       fusion = active
       timer = setInterval(
         () => {

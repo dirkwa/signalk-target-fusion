@@ -29,6 +29,8 @@ export interface AisVessel {
   context: string
   mmsi: string
   observation: Observation
+  /** Overall length (m), when the vessel reports it. */
+  length?: number
 }
 
 export interface SensorTarget {
@@ -52,10 +54,22 @@ export interface AssociationInput {
    * was linked to after that vessel's AIS falls silent.
    */
   vessels: ReadonlySet<string>
-  /** Gate radius near own ship (m), covering GPS, antenna offset and timing errors. */
-  minGateM: number
 }
 
+// The gate is sized to each object, so a boat without AIS anchored near an AIS
+// yacht stays a boat of its own while a radar track on a long, fast ship still
+// finds its AIS. It adds up the ways two positions of the same boat can differ.
+
+/** GPS error on both boats plus radar and camera position error near own ship (m). */
+const POSITION_NOISE_M = 30
+/**
+ * AIS reports the antenna, a sensor sees the hull's middle or nearest part,
+ * which can be up to half the boat's length away. Assumed for a boat that does
+ * not report its length (m).
+ */
+const DEFAULT_LENGTH_M = 50
+/** Uncertainty in when a position was taken, covered at the boat's speed (s). */
+const REPORT_SLACK_S = 10
 /**
  * Radar bearing error grows with range (1° is 17 m per km), so the gate widens
  * with the target's distance from own ship.
@@ -205,8 +219,7 @@ function matchCost(
   const { observation } = target
   const wasLinked = input.previous.get(target.context) === group.context
   const gate =
-    gateRadius(observation.position, input.minGateM, input.ownPosition) *
-    (wasLinked ? KEEP_GATE_FACTOR : 1)
+    gateRadius(group, observation, input.ownPosition) * (wasLinked ? KEEP_GATE_FACTOR : 1)
   const expected = extrapolate(group.reference, observation.timeMs)
   const gap = distance(expected, observation.position)
   if (gap > gate || !motionAgrees(group.reference, observation, wasLinked)) {
@@ -215,11 +228,12 @@ function matchCost(
   return gap / gate - (wasLinked ? 1 : 0)
 }
 
-function gateRadius(position: Position, minGateM: number, ownPosition?: Position): number {
-  if (!ownPosition) {
-    return minGateM
-  }
-  return Math.max(minGateM, distance(position, ownPosition) * GATE_RANGE_FRACTION)
+/** How far a target may lie from where the group is expected and still be the same boat (m). */
+function gateRadius(group: Group, observation: Observation, ownPosition?: Position): number {
+  const length = group.ais?.length ?? DEFAULT_LENGTH_M
+  const speed = Math.max(group.reference.speedOverGround ?? 0, observation.speedOverGround ?? 0)
+  const range = ownPosition ? distance(observation.position, ownPosition) : 0
+  return POSITION_NOISE_M + length / 2 + speed * REPORT_SLACK_S + range * GATE_RANGE_FRACTION
 }
 
 function motionAgrees(a: Observation, b: Observation, lenient: boolean): boolean {
