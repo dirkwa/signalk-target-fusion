@@ -27,6 +27,9 @@ interface Leaf {
 export interface ContextNode {
   mmsi?: unknown
   sameAs?: Leaf
+  design?: {
+    length?: Leaf
+  }
   navigation?: {
     position?: Leaf
     courseOverGroundTrue?: Leaf
@@ -50,10 +53,23 @@ export function aisVessels(vessels: Contexts, selfId: string, nowMs: number): Ai
     const mmsi = typeof vessel.mmsi === 'string' ? vessel.mmsi : MMSI_URN.exec(vesselId)?.[1]
     const observation = observationOf(vessel, nowMs, AIS_MAX_AGE_MS)
     if (mmsi && observation) {
-      result.push({ context: `vessels.${vesselId}`, mmsi, observation })
+      const length = overallLength(vessel)
+      result.push({
+        context: `vessels.${vesselId}`,
+        mmsi,
+        observation,
+        ...(length !== undefined && { length })
+      })
     }
   }
   return result
+}
+
+function overallLength(node: ContextNode): number | undefined {
+  const overall = (node.design?.length?.value as { overall?: unknown } | null | undefined)?.overall
+  return typeof overall === 'number' && Number.isFinite(overall) && overall > 0
+    ? overall
+    : undefined
 }
 
 /** Targets under `targets.*` with a fresh position. */

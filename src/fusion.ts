@@ -28,17 +28,13 @@ export class Fusion {
   /** The link this plugin published per target, so stop() withdraws only those. */
   private readonly linked = new Map<string, string>()
 
-  /** @param minGateM gate radius near own ship (m) */
-  constructor(private readonly minGateM: number) {}
-
   update({ vessels, targets, selfId, nowMs }: FusionInput): LinkChanges {
     const groups = associate({
       ownPosition: positionOf(vessels[selfId]),
       aisVessels: aisVessels(vessels, selfId, nowMs),
       targets: sensorTargets(targets, nowMs),
       previous: this.previous,
-      vessels: new Set(Object.keys(vessels).map((id) => `vessels.${id}`)),
-      minGateM: this.minGateM
+      vessels: new Set(Object.keys(vessels).map((id) => `vessels.${id}`))
     })
     this.previous = groups
 

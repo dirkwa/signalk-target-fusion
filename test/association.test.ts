@@ -6,7 +6,6 @@ import {
   type Observation,
   type SensorTarget
 } from '../src/association.js'
-import { DEFAULTS } from '../src/config.js'
 
 const NOW = Date.parse('2026-10-05T12:00:00Z')
 const OWN = { latitude: 52, longitude: 4 }
@@ -28,11 +27,14 @@ const obs = (north: number, extra: Partial<Observation> = {}): Observation => ({
 
 const vesselContext = (mmsi: string) => `vessels.urn:mrn:imo:mmsi:${mmsi}`
 
-const ais = (mmsi: string, observation: Observation): AisVessel => ({
+const ais = (mmsi: string, observation: Observation, length?: number): AisVessel => ({
   context: vesselContext(mmsi),
   mmsi,
-  observation
+  observation,
+  ...(length !== undefined && { length })
 })
+
+const anchored = (north: number) => obs(north, { speedOverGround: 0 })
 
 const target = (
   sensor: string,
@@ -54,7 +56,6 @@ const run = (input: Partial<AssociationInput>) =>
     targets: [],
     previous: new Map(),
     vessels: new Set(),
-    minGateM: DEFAULTS.gateDistance,
     ...input
   })
 
@@ -177,5 +178,27 @@ describe('associate', () => {
 
     const pruned = run({ targets: [radar('r0-1', obs(2020))], previous })
     expect(pruned.get('targets.radar:r0-1')).toBe('targets.radar:r0-1')
+  })
+
+  it('keeps a boat without AIS apart from an anchored yacht 100 m away', () => {
+    const yacht = [ais('244060000', anchored(300), 12)]
+    const dark = run({ aisVessels: yacht, targets: [radar('r0-dark', anchored(400))] })
+    expect(dark.get('targets.radar:r0-dark')).toBe('targets.radar:r0-dark')
+
+    const echo = run({ aisVessels: yacht, targets: [radar('r0-yacht', anchored(320))] })
+    expect(echo.get('targets.radar:r0-yacht')).toBe(vesselContext('244060000'))
+  })
+
+  it('links a radar track a long way off the antenna of a long, fast ship', () => {
+    const tanker = (length?: number) => [
+      ais('244060000', obs(2000, { speedOverGround: 7.7 }), length)
+    ]
+    const track = [radar('r0-1', obs(2300, { speedOverGround: 7.7 }))]
+    expect(run({ aisVessels: tanker(300), targets: track }).get('targets.radar:r0-1')).toBe(
+      vesselContext('244060000')
+    )
+    expect(run({ aisVessels: tanker(), targets: track }).get('targets.radar:r0-1')).toBe(
+      'targets.radar:r0-1'
+    )
   })
 })

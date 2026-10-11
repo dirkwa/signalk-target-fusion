@@ -24,7 +24,9 @@ targets.radar:nav1034A-17  sameAs  "vessels.urn:mrn:imo:mmsi:244060000"
 A target is linked to an AIS vessel when:
 
 - the sensor identified the vessel by its MMSI, or
-- the AIS position, moved forward to the time of the radar or camera observation, is within 200 m of the target or 5% of its range from own ship, whichever is larger (200 m is configurable; radar bearings are less precise far out), and the two agree on motion: speed within half the faster of the two (never tighter than 1.5 m/s), and course within 45° once both make 1 m/s. Motion is not compared when either side reports no speed.
+- the AIS position, moved forward to the time of the radar or camera observation, is close enough to the target, and the two agree on motion: speed within half the faster of the two (never tighter than 1.5 m/s), and course within 45° once both make 1 m/s. Motion is not compared when either side reports no speed.
+
+How close is close enough depends on the boat: 30 m for GPS and sensor position error, plus half the boat's length (AIS reports the antenna, a sensor sees the hull; 50 m is assumed when the vessel reports no length), plus the distance it covers in 10 s (positions are not all taken at the same moment), plus 5% of its range from own ship (radar bearings are less precise far out). A 12 m yacht at anchor 300 m away matches within about 50 m, so a boat without AIS anchored 100 m from it stays a boat of its own; a 300 m tanker at 15 kn 2 km away matches within about 360 m.
 
 Targets without AIS are linked to each other the same way, so a radar track and a camera detection of one boat without AIS are one object. One sensor never contributes two targets to one boat. A link, once made, holds a little beyond the distance and motion limits it took to make it (1.5 times each), so a boat near the limit doesn't flicker between one symbol and two. A target keeps its AIS vessel while radar still tracks it after the vessel's AIS falls silent.
 
@@ -34,7 +36,6 @@ Run one fusion plugin at a time; two would publish conflicting links. Stopping t
 
 ## Settings
 
-- **Match targets within (m)**, default 200: how far apart a target and an AIS position may be near own ship and still be linked. Raise it for a radar or camera with a larger position error, lower it in crowded harbours.
 - **Link targets every (s)**, default 2.
 
 ## License
