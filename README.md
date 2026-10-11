@@ -6,7 +6,7 @@ AIS, radar and cameras often see the same boat. This plugin works out which rada
 
 ## Setup
 
-Install **Target Fusion** from the App Store and enable it. There is nothing else to set up: it starts linking as soon as a sensor plugin publishes targets. You need:
+Install **Target Fusion** from the App Store. It enables itself, and there is nothing else to set up: it starts linking as soon as a sensor plugin publishes targets. You need:
 
 - a sensor plugin that publishes its targets as `targets.<type>:<id>`, such as the MaYaRa radar plugin (1.7.0 or later) for ARPA targets, and
 - AIS, from any connection that brings AIS vessels into Signal K.
