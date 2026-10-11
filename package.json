@@ -5,6 +5,7 @@
   "author": "Dirk Wahrheit",
   "main": "plugin/index.js",
   "type": "module",
+  "signalk-plugin-enabled-by-default": true,
   "scripts": {
     "format": "prettier --write . && eslint --fix .",
     "ci-lint": "eslint . && prettier --check .",
