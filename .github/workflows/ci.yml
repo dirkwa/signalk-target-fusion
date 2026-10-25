@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   test:
-    uses: dirkwa/signalk-server/.github/workflows/plugin-ci.yml@bc78f7d48ed6446db548c6f7515921802e286d63
+    uses: dirkwa/signalk-server/.github/workflows/plugin-ci.yml@a52c3edd6311fabe0afa48c2b9dcf0e68c364d35
     with:
       enable-signalk-integration: true
       format-check-command: npm run ci-lint
