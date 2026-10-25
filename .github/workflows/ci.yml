@@ -12,9 +12,10 @@ permissions:
 
 jobs:
   test:
-    uses: dirkwa/signalk-server/.github/workflows/plugin-ci.yml@a52c3edd6311fabe0afa48c2b9dcf0e68c364d35
+    uses: dirkwa/signalk-server/.github/workflows/plugin-ci.yml@c838b2f8c65c6a2c2a8cdc74cfd55a00a64061de
     with:
       enable-signalk-integration: true
+      node-versions: '["20"]'
       format-check-command: npm run ci-lint
 
   # Workflow expressions are only checked when a job runs, and the publish
