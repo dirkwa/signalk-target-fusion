@@ -11,7 +11,7 @@ Install **Target Fusion** from the App Store. It enables itself, and there is no
 - a sensor plugin that publishes its targets as `targets.<type>:<id>`, such as the MaYaRa radar plugin (1.7.0 or later) for ARPA targets, and
 - AIS, from any connection that brings AIS vessels into Signal K.
 
-The links are only useful to software that follows them. The Collision Alerts plugin raises one alarm per boat instead of one per sensor, and a chart plotter that shows sensor targets (Freeboard-SK, from the release that adds them) draws a linked target as part of its AIS vessel.
+The links are only useful to software that follows them. The [Collision Alerts](https://github.com/SignalK/collision-alerts) plugin, which the App Store recommends alongside this one, raises one alarm per boat instead of one per sensor, and a chart plotter that shows sensor targets (Freeboard-SK, from the release that adds them) draws a linked target as part of its AIS vessel.
 
 ## How it works
 

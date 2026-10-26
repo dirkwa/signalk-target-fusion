@@ -28,6 +28,9 @@
     "appIcon": "./assets/icon.svg",
     "screenshots": [
       "./docs/screenshots/fused-target.png"
+    ],
+    "recommends": [
+      "@signalk/collision-alerts"
     ]
   },
   "files": [
